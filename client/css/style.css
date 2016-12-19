@@ -839,7 +839,6 @@ kbd {
 	word-wrap: break-word;
 	word-break: break-word; /* Webkit-specific */
 	display: flex;
-	overflow: hidden;
 	position: relative;
 }
 
@@ -1530,8 +1529,7 @@ kbd {
 .tooltipped:after {
 	position: absolute;
 	z-index: 1000000;
-	display: inline-block;
-	visibility: hidden;
+	display: none;
 	opacity: 0;
 	padding: 5px 8px;
 	font: 12px Lato;
@@ -1549,14 +1547,12 @@ kbd {
 	background: #222;
 	border-radius: 3px;
 	-webkit-font-smoothing: subpixel-antialiased;
-	transition: .2s;
 }
 
 .tooltipped:before {
 	position: absolute;
 	z-index: 1000001;
-	display: inline-block;
-	visibility: hidden;
+	display: none;
 	opacity: 0;
 	width: 0;
 	height: 0;
@@ -1564,7 +1560,26 @@ kbd {
 	pointer-events: none;
 	content: "";
 	border: 5px solid transparent;
-	transition: .2s;
+}
+
+@-webkit-keyframes tooltip-appear {
+	from {
+		opacity: 0;
+	}
+
+	to {
+		opacity: 1;
+	}
+}
+
+@keyframes tooltip-appear {
+	from {
+		opacity: 0;
+	}
+
+	to {
+		opacity: 1;
+	}
 }
 
 .tooltipped:hover:before,
@@ -1573,9 +1588,18 @@ kbd {
 .tooltipped:active:after,
 .tooltipped:focus:before,
 .tooltipped:focus:after {
-	visibility: visible;
-	opacity: 1;
+	display: inline-block;
 	text-decoration: none;
+	-webkit-animation-name: tooltip-appear;
+	animation-name: tooltip-appear;
+	-webkit-animation-duration: .1s;
+	animation-duration: .1s;
+	-webkit-animation-fill-mode: forwards;
+	animation-fill-mode: forwards;
+	-webkit-animation-timing-function: ease-in;
+	animation-timing-function: ease-in;
+	-webkit-animation-delay: .4s;
+	animation-delay: .4s;
 }
 
 .tooltipped-s:after,
@@ -1672,6 +1696,17 @@ kbd {
 	border-right-color: #222;
 }
 
+@media only screen and (-webkit-min-device-pixel-ratio: 2),
+	only screen and (min--moz-device-pixel-ratio: 2),
+	only screen and (-moz-min-device-pixel-ratio: 2),
+	only screen and (min-device-pixel-ratio: 2),
+	only screen and (min-resolution: 192dpi),
+	only screen and (min-resolution: 2dppx) {
+	.tooltipped-w:after {
+		margin-right: 4.5px;
+	}
+}
+
 /* End tooltips */
 
 /**
@@ -1764,12 +1799,8 @@ kbd {
 	  * - https://www.w3.org/TR/mediaqueries-4/
 	  * - https://developer.mozilla.org/en-US/docs/Web/CSS/@media/hover
 	  */
-	.tooltipped:hover:before,
-	.tooltipped:hover:after,
-	.tooltipped:active:before,
-	.tooltipped:active:after,
-	.tooltipped:focus:before,
-	.tooltipped:focus:after {
+	.tooltipped-no-touch:hover:before,
+	.tooltipped-no-touch:hover:after {
 		visibility: hidden;
 		opacity: 0;
 	}
