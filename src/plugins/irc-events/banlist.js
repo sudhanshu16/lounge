@@ -1,5 +1,6 @@
 "use strict";
 
+var Chan = require("../../models/chan");
 var Msg = require("../../models/msg");
 
 module.exports = function(irc, network) {
@@ -17,18 +18,28 @@ module.exports = function(irc, network) {
 			return;
 		}
 
-		lobby.pushMessage(client, new Msg({
-			time: Date.now(),
-			type: Msg.Type.MESSAGE,
-			text: `Banlist for ${channel}`
-		}), true);
+		var chan = network.getChannel(`Banlist for ${channel}`);
+		if (typeof chan === "undefined") {
+			chan = new Chan({
+				type: Chan.Type.SPECIAL,
+				name: `Banlist for ${channel}`
+			});
+			network.channels.push(chan);
+			client.emit("join", {
+				network: network.id,
+				chan: chan
+			});
+		}
 
 		bans.forEach((data) => {
-			lobby.pushMessage(client, new Msg({
-				time: Date.now(),
-				type: Msg.Type.MESSAGE,
-				text: data.banned
-			}), true);
+			client.emit("msg", {
+				chan: chan.id,
+				msg: new Msg({
+					time: Date.now(),
+					type: Msg.Type.BANLIST,
+					text: data.banned
+				})
+			});
 		});
 	});
 };
