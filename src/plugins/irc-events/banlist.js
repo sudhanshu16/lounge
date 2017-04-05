@@ -6,7 +6,9 @@ var Msg = require("../../models/msg");
 module.exports = function(irc, network) {
 	var client = this;
 
-	irc.on("banlist", function({channel, bans}) {
+	irc.on("banlist", function(banlist) {
+		var channel = banlist.channel;
+		var bans = banlist.bans;
 		var lobby = network.channels[0];
 		if (!bans) {
 			var msg = new Msg({
